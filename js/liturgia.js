@@ -4,13 +4,14 @@
   const fullDateEl = document.getElementById("date-full");
   const prevBtn = document.getElementById("prev-day");
   const nextBtn = document.getElementById("next-day");
-  const todayBtn = document.getElementById("today-btn");
+  const openCalendarBtn = document.getElementById("open-calendar-btn");
   const dateLabelBtn = document.getElementById("date-label-btn");
   const calendarPopover = document.getElementById("calendar-popover");
   const calMonthLabel = document.getElementById("cal-month-label");
   const calDaysEl = document.getElementById("calendar-days");
   const calPrevMonthBtn = document.getElementById("cal-prev-month");
   const calNextMonthBtn = document.getElementById("cal-next-month");
+  const calTodayBtn = document.getElementById("cal-today-btn");
 
   const COLOR_MAP = {
     Verde: "#2f7a4f",
@@ -197,6 +198,10 @@
     e.stopPropagation();
     toggleCalendar();
   });
+  openCalendarBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggleCalendar();
+  });
   calendarPopover.addEventListener("click", (e) => e.stopPropagation());
   document.addEventListener("click", closeCalendar);
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeCalendar(); });
@@ -209,6 +214,11 @@
     calendarViewDate.setMonth(calendarViewDate.getMonth() + 1);
     renderCalendar();
   });
+  calTodayBtn.addEventListener("click", () => {
+    currentDate = new Date();
+    closeCalendar();
+    loadLiturgy(currentDate);
+  });
 
   prevBtn.addEventListener("click", () => {
     currentDate.setDate(currentDate.getDate() - 1);
@@ -216,10 +226,6 @@
   });
   nextBtn.addEventListener("click", () => {
     currentDate.setDate(currentDate.getDate() + 1);
-    loadLiturgy(currentDate);
-  });
-  todayBtn.addEventListener("click", () => {
-    currentDate = new Date();
     loadLiturgy(currentDate);
   });
 

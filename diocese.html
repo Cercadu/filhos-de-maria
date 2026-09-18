@@ -3,24 +3,16 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>AFIM - Associação Filhos de Maria</title>
-<meta name="description" content="Informativos, liturgia diária e pedidos de oração da Associação Filhos de Maria (AFIM)." />
+<title>Diocese de Ipameri - AFIM</title>
+<meta name="description" content="Notícias da Diocese de Ipameri, à qual a Associação Filhos de Maria (AFIM) está ligada." />
 <meta name="theme-color" content="#0f2645" />
 <link rel="manifest" href="/manifest.json" />
 <link rel="icon" href="/favicon.ico" />
 <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="AFIM" />
 <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
-
-<div class="install-banner" id="install-banner">
-  <span>📲 Instale o app da AFIM na tela inicial do seu telefone.</span>
-  <button class="btn btn-sm btn-primary" id="install-btn" style="background:#0f2645;">Instalar</button>
-  <button class="close" id="install-close" aria-label="Fechar">&times;</button>
-</div>
 
 <header class="site-header">
   <div class="container">
@@ -40,25 +32,19 @@
   </div>
 </header>
 
-<section class="hero">
-  <div class="container">
-    <img class="hero-logo" src="/assets/img/logo-badge.png" alt="AFIM - Associação Filhos de Maria" />
-    <h1>Associação Filhos de Maria</h1>
-    <p class="tagline">Com Maria, a serviço do Senhor e do próximo.</p>
-    <p class="hero-verse">"Fazei tudo o que Ele vos disser." (Jo 2,5)</p>
-  </div>
-</section>
-
 <main class="container section">
   <div class="section-title">
     <span class="bar"></span>
-    <h2>Informativo AFIM</h2>
+    <h2>Notícias da Diocese</h2>
   </div>
-  <div id="posts-list">
+  <p class="small-muted" style="margin-top:-10px;margin-bottom:16px;">Últimas publicações da Diocese de Ipameri, à qual a AFIM está ligada.</p>
+
+  <div id="diocese-list">
     <div class="spinner"></div>
   </div>
-</main>
 
+  <button class="btn btn-outline btn-block" id="diocese-load-more" style="display:none;margin-top:16px;">Carregar mais notícias</button>
+</main>
 
 <nav class="bottom-nav">
   <a href="/" data-nav="/"><span class="icon">🏠</span>Início</a>
@@ -70,7 +56,6 @@
 <footer class="site-footer">
   <div class="container">
     <img src="/assets/img/logo-badge.png" alt="AFIM" />
-    <p class="verse">"Com Maria, semeando esperança em cada coração."</p>
     <p>Associação Filhos de Maria (AFIM)</p>
     <p class="social"><a href="https://www.instagram.com/filhosdemariacn/" target="_blank" rel="noopener">📷 Siga no Instagram</a></p>
     <p class="fine">© <span id="year"></span> AFIM · <a href="/admin/">Área administrativa</a></p>
@@ -78,8 +63,7 @@
 </footer>
 
 <script src="/js/app.js"></script>
-<script src="/js/api.js"></script>
-<script src="/js/home.js"></script>
+<script src="/js/diocese.js"></script>
 <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
 </body>
 </html>

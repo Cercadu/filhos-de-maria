@@ -26,6 +26,7 @@
       <a href="/" data-nav="/">Início</a>
       <a href="/liturgia.html" data-nav="/liturgia.html">Liturgia</a>
       <a href="/oracao.html" data-nav="/oracao.html">Orações</a>
+      <a href="/diocese.html" data-nav="/diocese.html">Diocese</a>
     </nav>
   </div>
 </header>
@@ -42,7 +43,7 @@
       <strong id="date-weekday">carregando...</strong>
       <span id="date-full"></span>
     </button>
-    <button class="icon-btn" id="today-btn" aria-label="Ir para hoje" title="Hoje">📅</button>
+    <button class="icon-btn" id="open-calendar-btn" type="button" aria-label="Abrir calendário" title="Escolher data">📅</button>
     <button class="icon-btn" id="next-day" aria-label="Próximo dia">›</button>
 
     <div class="calendar-popover" id="calendar-popover">
@@ -55,6 +56,7 @@
         <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
       </div>
       <div class="calendar-days" id="calendar-days"></div>
+      <button type="button" class="btn btn-ghost btn-sm btn-block" id="cal-today-btn" style="margin-top:10px;">Hoje</button>
     </div>
   </div>
 
@@ -67,6 +69,7 @@
   <a href="/" data-nav="/"><span class="icon">🏠</span>Início</a>
   <a href="/liturgia.html" data-nav="/liturgia.html"><span class="icon">📖</span>Liturgia</a>
   <a href="/oracao.html" data-nav="/oracao.html"><span class="icon">🙏</span>Orações</a>
+  <a href="/diocese.html" data-nav="/diocese.html"><span class="icon">⛪</span>Diocese</a>
 </nav>
 
 <footer class="site-footer">

@@ -1,9 +1,10 @@
-const CACHE_VERSION = "afim-v6";
+const CACHE_VERSION = "afim-v7";
 const APP_SHELL = [
   "/",
   "/index.html",
   "/liturgia.html",
   "/oracao.html",
+  "/diocese.html",
   "/offline.html",
   "/css/style.css",
   "/js/app.js",
@@ -11,6 +12,7 @@ const APP_SHELL = [
   "/js/home.js",
   "/js/liturgia.js",
   "/js/oracao.js",
+  "/js/diocese.js",
   "/manifest.json",
   "/assets/img/logo.png",
   "/assets/img/logo-badge.png",
