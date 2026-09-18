@@ -1,9 +1,16 @@
 (function () {
   const loginScreen = document.getElementById("login-screen");
   const adminApp = document.getElementById("admin-app");
+  const loginModeBox = document.getElementById("login-mode");
+  const setupModeBox = document.getElementById("setup-mode");
   const loginBtn = document.getElementById("login-btn");
+  const loginUser = document.getElementById("login-username");
   const loginPass = document.getElementById("login-password");
   const loginError = document.getElementById("login-error");
+  const setupBtn = document.getElementById("setup-btn");
+  const setupUser = document.getElementById("setup-username");
+  const setupPass = document.getElementById("setup-password");
+  const setupError = document.getElementById("setup-error");
   const logoutBtn = document.getElementById("logout-btn");
 
   const MAX_ATTACHMENTS = 4;
@@ -20,38 +27,50 @@
     "application/vnd.openxmlformats-officedocument.presentationml.presentation",
   ];
 
-  // ---------- Login ----------
+  // ---------- Login / criação da primeira conta ----------
   async function tryStoredLogin() {
-    const stored = sessionStorage.getItem("afim_admin_pass");
-    if (!stored) return showLogin();
-    const ok = await window.AfimApi.verifyPassword(stored);
-    if (ok) showApp();
-    else { sessionStorage.removeItem("afim_admin_pass"); showLogin(); }
+    const token = sessionStorage.getItem("afim_admin_token");
+    if (token) return showApp();
+
+    let hasUsers = true;
+    try {
+      hasUsers = await window.AfimApi.hasAdminUsers();
+    } catch {
+      hasUsers = true; // em dúvida, mostra login normal em vez de expor criação de conta
+    }
+    showLogin(!hasUsers);
   }
 
-  function showLogin() {
+  function showLogin(showSetup) {
     loginScreen.style.display = "block";
     adminApp.style.display = "none";
+    document.getElementById("login-check-spinner").style.display = "none";
+    loginModeBox.style.display = showSetup ? "none" : "block";
+    setupModeBox.style.display = showSetup ? "block" : "none";
   }
   function showApp() {
     loginScreen.style.display = "none";
     adminApp.style.display = "block";
     loadPosts();
+    loadCandles();
     loadPrayers();
     loadTestimonials();
     loadForms();
+    loadUsers();
   }
 
   loginBtn.addEventListener("click", async () => {
-    const pass = loginPass.value.trim();
-    if (!pass) return;
+    const username = loginUser.value.trim();
+    const password = loginPass.value;
+    if (!username || !password) return;
     loginBtn.disabled = true;
     loginBtn.textContent = "Entrando...";
-    const ok = await window.AfimApi.verifyPassword(pass);
+    const result = await window.AfimApi.login(username, password);
     loginBtn.disabled = false;
     loginBtn.textContent = "Entrar";
-    if (ok) {
-      sessionStorage.setItem("afim_admin_pass", pass);
+    if (result) {
+      sessionStorage.setItem("afim_admin_token", result.token);
+      sessionStorage.setItem("afim_admin_username", result.username);
       loginError.style.display = "none";
       showApp();
     } else {
@@ -60,8 +79,37 @@
   });
   loginPass.addEventListener("keydown", (e) => { if (e.key === "Enter") loginBtn.click(); });
 
+  setupBtn.addEventListener("click", async () => {
+    const username = setupUser.value.trim();
+    const password = setupPass.value;
+    setupError.style.display = "none";
+    if (username.length < 3 || password.length < 6) {
+      setupError.textContent = "Usuário precisa de 3+ caracteres e senha de 6+ caracteres.";
+      setupError.style.display = "block";
+      return;
+    }
+    setupBtn.disabled = true;
+    setupBtn.textContent = "Criando...";
+    try {
+      await window.AfimApi.createFirstUser(username, password);
+      const result = await window.AfimApi.login(username, password);
+      if (!result) throw new Error("Conta criada, mas o login automático falhou. Tente entrar manualmente.");
+      sessionStorage.setItem("afim_admin_token", result.token);
+      sessionStorage.setItem("afim_admin_username", result.username);
+      showApp();
+    } catch (err) {
+      setupError.textContent = err.message;
+      setupError.style.display = "block";
+    } finally {
+      setupBtn.disabled = false;
+      setupBtn.textContent = "Criar conta e entrar";
+    }
+  });
+  setupPass.addEventListener("keydown", (e) => { if (e.key === "Enter") setupBtn.click(); });
+
   logoutBtn.addEventListener("click", () => {
-    sessionStorage.removeItem("afim_admin_pass");
+    sessionStorage.removeItem("afim_admin_token");
+    sessionStorage.removeItem("afim_admin_username");
     location.reload();
   });
 
@@ -73,9 +121,11 @@
     btn.classList.add("active");
     const tab = btn.dataset.tab;
     document.getElementById("tab-posts").style.display = tab === "posts" ? "block" : "none";
+    document.getElementById("tab-candles").style.display = tab === "candles" ? "block" : "none";
     document.getElementById("tab-prayers").style.display = tab === "prayers" ? "block" : "none";
     document.getElementById("tab-testimonials").style.display = tab === "testimonials" ? "block" : "none";
     document.getElementById("tab-forms").style.display = tab === "forms" ? "block" : "none";
+    document.getElementById("tab-users").style.display = tab === "users" ? "block" : "none";
   });
 
   // ---------- Utils ----------
@@ -363,6 +413,48 @@
     }
   }
 
+  // ---------- Candles (Velas) ----------
+  function timeAgo(iso) {
+    const hours = Math.floor((Date.now() - new Date(iso).getTime()) / (60 * 60 * 1000));
+    if (hours < 1) return "há poucos minutos";
+    if (hours === 1) return "há 1 hora";
+    return `há ${hours} horas`;
+  }
+
+  async function loadCandles() {
+    const list = document.getElementById("admin-candles-list");
+    try {
+      const { candles } = await window.AfimApi.getCandles();
+      list.innerHTML = "";
+      if (!candles.length) {
+        list.innerHTML = `<div class="empty-state">Nenhuma vela acesa nas últimas 24 horas.</div>`;
+        return;
+      }
+      candles.forEach((c) => {
+        const row = document.createElement("div");
+        row.className = "post-row";
+        row.innerHTML = `
+          <div class="info">
+            <strong>🕯️ ${escapeHtml(c.name || "Anônimo")}</strong>
+            <span class="small-muted">${timeAgo(c.createdAt)}</span>
+          </div>
+          <div class="actions">
+            <button class="btn btn-sm btn-danger" data-action="delete">Excluir</button>
+          </div>
+        `;
+        row.querySelector('[data-action="delete"]').addEventListener("click", async () => {
+          if (!confirm("Excluir esta vela?")) return;
+          await window.AfimApi.deleteCandle(c.id);
+          window.afimToast("Vela excluída.");
+          loadCandles();
+        });
+        list.appendChild(row);
+      });
+    } catch {
+      list.innerHTML = `<div class="empty-state">Erro ao carregar velas.</div>`;
+    }
+  }
+
   // ---------- Prayers ----------
   let currentPrayerFilter = "pending";
   document.querySelectorAll('#tab-prayers .admin-tabs')[0].addEventListener("click", (e) => {
@@ -585,6 +677,135 @@
       });
     } catch {
       list.innerHTML = `<div class="empty-state">Erro ao carregar formulários.</div>`;
+    }
+  }
+
+  // ---------- Usuários ----------
+  const userModal = document.getElementById("user-modal");
+  const userUsernameInput = document.getElementById("user-username");
+  const userPasswordInput = document.getElementById("user-password");
+  const userError = document.getElementById("user-error");
+
+  function openUserModal() {
+    userUsernameInput.value = "";
+    userPasswordInput.value = "";
+    userError.style.display = "none";
+    userModal.classList.add("show");
+    userUsernameInput.focus();
+  }
+  function closeUserModal() { userModal.classList.remove("show"); }
+
+  document.getElementById("new-user-btn").addEventListener("click", openUserModal);
+  document.getElementById("cancel-user-btn").addEventListener("click", closeUserModal);
+  userModal.addEventListener("click", (e) => { if (e.target === userModal) closeUserModal(); });
+
+  document.getElementById("save-user-btn").addEventListener("click", async () => {
+    const username = userUsernameInput.value.trim();
+    const password = userPasswordInput.value;
+    userError.style.display = "none";
+    if (username.length < 3 || password.length < 6) {
+      userError.textContent = "Usuário precisa de 3+ caracteres e senha de 6+ caracteres.";
+      userError.style.display = "block";
+      return;
+    }
+    const saveBtn = document.getElementById("save-user-btn");
+    saveBtn.disabled = true;
+    saveBtn.textContent = "Criando...";
+    try {
+      await window.AfimApi.createUser(username, password);
+      closeUserModal();
+      window.afimToast("Usuário criado com sucesso!");
+      loadUsers();
+    } catch (err) {
+      userError.textContent = err.message === "username_taken" ? "Esse usuário já existe." : "Erro ao criar: " + err.message;
+      userError.style.display = "block";
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.textContent = "Criar usuário";
+    }
+  });
+
+  const passwordModal = document.getElementById("password-modal");
+  const passwordUsernameInput = document.getElementById("password-username");
+  const passwordUsernameLabel = document.getElementById("password-username-label");
+  const newPasswordInput = document.getElementById("new-password-input");
+  const passwordError = document.getElementById("password-error");
+
+  function openPasswordModal(username) {
+    passwordUsernameInput.value = username;
+    passwordUsernameLabel.textContent = username;
+    newPasswordInput.value = "";
+    passwordError.style.display = "none";
+    passwordModal.classList.add("show");
+    newPasswordInput.focus();
+  }
+  function closePasswordModal() { passwordModal.classList.remove("show"); }
+
+  document.getElementById("cancel-password-btn").addEventListener("click", closePasswordModal);
+  passwordModal.addEventListener("click", (e) => { if (e.target === passwordModal) closePasswordModal(); });
+
+  document.getElementById("save-password-btn").addEventListener("click", async () => {
+    const username = passwordUsernameInput.value;
+    const password = newPasswordInput.value;
+    passwordError.style.display = "none";
+    if (password.length < 6) {
+      passwordError.textContent = "A senha precisa ter 6+ caracteres.";
+      passwordError.style.display = "block";
+      return;
+    }
+    const saveBtn = document.getElementById("save-password-btn");
+    saveBtn.disabled = true;
+    saveBtn.textContent = "Salvando...";
+    try {
+      await window.AfimApi.changePassword(username, password);
+      closePasswordModal();
+      window.afimToast(`Senha de "${username}" atualizada.`);
+    } catch (err) {
+      passwordError.textContent = "Erro ao salvar: " + err.message;
+      passwordError.style.display = "block";
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.textContent = "Salvar nova senha";
+    }
+  });
+
+  async function loadUsers() {
+    const list = document.getElementById("admin-users-list");
+    try {
+      const { users } = await window.AfimApi.getUsers();
+      const currentUsername = sessionStorage.getItem("afim_admin_username");
+      list.innerHTML = "";
+      users.forEach((u) => {
+        const row = document.createElement("div");
+        row.className = "post-row";
+        row.innerHTML = `
+          <div class="info">
+            <strong>${escapeHtml(u.username)} ${u.username === currentUsername ? "<span class=\"small-muted\">(você)</span>" : ""}</strong>
+            <span class="small-muted">Criado em ${formatDate(u.createdAt)}</span>
+          </div>
+          <div class="actions">
+            <button class="btn btn-sm btn-outline" data-action="reset">Redefinir senha</button>
+            ${users.length > 1 ? '<button class="btn btn-sm btn-danger" data-action="delete">Excluir</button>' : ""}
+          </div>
+        `;
+        row.querySelector('[data-action="reset"]').addEventListener("click", () => openPasswordModal(u.username));
+        const deleteBtn = row.querySelector('[data-action="delete"]');
+        if (deleteBtn) {
+          deleteBtn.addEventListener("click", async () => {
+            if (!confirm(`Excluir o usuário "${u.username}"?`)) return;
+            try {
+              await window.AfimApi.deleteUser(u.username);
+              window.afimToast("Usuário excluído.");
+              loadUsers();
+            } catch (err) {
+              window.afimToast("Erro ao excluir: " + err.message);
+            }
+          });
+        }
+        list.appendChild(row);
+      });
+    } catch {
+      list.innerHTML = `<div class="empty-state">Erro ao carregar usuários.</div>`;
     }
   }
 

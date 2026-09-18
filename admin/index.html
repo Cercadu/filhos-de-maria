@@ -13,13 +13,34 @@
 <div id="login-screen">
   <div class="login-box">
     <img src="/assets/img/logo.png" alt="AFIM" />
-    <h2>Área Administrativa</h2>
-    <p class="small-muted" style="margin-bottom:18px;">Digite a senha de acesso para gerenciar publicações e pedidos de oração.</p>
-    <div class="field" style="text-align:left;">
-      <input type="password" id="login-password" placeholder="Senha de administrador" />
+
+    <div id="login-check-spinner" class="spinner"></div>
+
+    <div id="login-mode" style="display:none;">
+      <h2>Área Administrativa</h2>
+      <p class="small-muted" style="margin-bottom:18px;">Entre com seu usuário e senha para gerenciar publicações e pedidos de oração.</p>
+      <div class="field" style="text-align:left;">
+        <input type="text" id="login-username" autocomplete="username" placeholder="Usuário" />
+      </div>
+      <div class="field" style="text-align:left;">
+        <input type="password" id="login-password" autocomplete="current-password" placeholder="Senha" />
+      </div>
+      <button class="btn btn-primary btn-block" id="login-btn">Entrar</button>
+      <p class="hint" id="login-error" style="color:#b3432b;display:none;">Usuário ou senha incorretos.</p>
     </div>
-    <button class="btn btn-primary btn-block" id="login-btn">Entrar</button>
-    <p class="hint" id="login-error" style="color:#b3432b;display:none;">Senha incorreta. Tente novamente.</p>
+
+    <div id="setup-mode" style="display:none;">
+      <h2>Criar primeira conta</h2>
+      <p class="small-muted" style="margin-bottom:18px;">Nenhuma conta de administrador foi criada ainda. Defina abaixo o usuário e a senha da primeira conta — só quem estiver com este navegador aberto agora vai saber essa senha.</p>
+      <div class="field" style="text-align:left;">
+        <input type="text" id="setup-username" autocomplete="username" placeholder="Escolha um usuário" />
+      </div>
+      <div class="field" style="text-align:left;">
+        <input type="password" id="setup-password" autocomplete="new-password" placeholder="Escolha uma senha (mín. 6 caracteres)" />
+      </div>
+      <button class="btn btn-gold btn-block" id="setup-btn">Criar conta e entrar</button>
+      <p class="hint" id="setup-error" style="color:#b3432b;display:none;"></p>
+    </div>
   </div>
 </div>
 
@@ -34,14 +55,21 @@
   <div class="container" style="padding-top:18px;padding-bottom:60px;">
     <div class="admin-tabs">
       <button class="admin-tab active" data-tab="posts">📰 Publicações</button>
-      <button class="admin-tab" data-tab="prayers">🕯️ Pedidos de Oração</button>
+      <button class="admin-tab" data-tab="candles">🕯️ Velas</button>
+      <button class="admin-tab" data-tab="prayers">🙏 Pedidos de Oração</button>
       <button class="admin-tab" data-tab="testimonials">✨ Testemunhos</button>
       <button class="admin-tab" data-tab="forms">📝 Formulários</button>
+      <button class="admin-tab" data-tab="users">🔑 Usuários</button>
     </div>
 
     <section id="tab-posts">
       <button class="btn btn-gold" id="new-post-btn" style="margin-bottom:16px;">+ Nova publicação</button>
       <div id="admin-posts-list"><div class="spinner"></div></div>
+    </section>
+
+    <section id="tab-candles" style="display:none;">
+      <p class="small-muted" style="margin-bottom:14px;">Velas acesas nas últimas 24 horas. Elas somem sozinhas depois desse prazo — use "Excluir" só se algum nome for inadequado.</p>
+      <div id="admin-candles-list"><div class="spinner"></div></div>
     </section>
 
     <section id="tab-prayers" style="display:none;">
@@ -73,6 +101,47 @@
       <button class="btn btn-gold" id="new-form-btn" style="margin-bottom:16px;">+ Novo formulário</button>
       <div id="admin-forms-list"><div class="spinner"></div></div>
     </section>
+
+    <section id="tab-users" style="display:none;">
+      <p class="small-muted" style="margin-bottom:14px;">Cada responsável da AFIM deve ter seu próprio usuário. Ninguém (nem quem programou o site) consegue ver a senha de outra pessoa — só é possível redefinir.</p>
+      <button class="btn btn-gold" id="new-user-btn" style="margin-bottom:16px;">+ Novo usuário</button>
+      <div id="admin-users-list"><div class="spinner"></div></div>
+    </section>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="user-modal">
+  <div class="modal">
+    <h3>Novo usuário</h3>
+    <div class="field">
+      <label for="user-username">Usuário *</label>
+      <input type="text" id="user-username" autocomplete="off" placeholder="ex: josiele" />
+    </div>
+    <div class="field">
+      <label for="user-password">Senha *</label>
+      <input type="password" id="user-password" autocomplete="new-password" placeholder="Mínimo 6 caracteres" />
+    </div>
+    <p class="hint" id="user-error" style="color:#b3432b;display:none;"></p>
+    <div style="display:flex;gap:10px;margin-top:6px;">
+      <button class="btn btn-ghost" id="cancel-user-btn" style="flex:1;">Cancelar</button>
+      <button class="btn btn-primary" id="save-user-btn" style="flex:2;">Criar usuário</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="password-modal">
+  <div class="modal">
+    <h3>Redefinir senha</h3>
+    <input type="hidden" id="password-username" />
+    <div class="field">
+      <label for="new-password-input">Nova senha para <strong id="password-username-label"></strong></label>
+      <input type="password" id="new-password-input" autocomplete="new-password" placeholder="Mínimo 6 caracteres" />
+    </div>
+    <p class="hint" id="password-error" style="color:#b3432b;display:none;"></p>
+    <div style="display:flex;gap:10px;margin-top:6px;">
+      <button class="btn btn-ghost" id="cancel-password-btn" style="flex:1;">Cancelar</button>
+      <button class="btn btn-primary" id="save-password-btn" style="flex:2;">Salvar nova senha</button>
+    </div>
   </div>
 </div>
 

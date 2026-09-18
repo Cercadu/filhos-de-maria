@@ -389,7 +389,7 @@ details.reading.evangelho summary .ref { color: #cfd9e6; }
 }
 .field { margin-bottom: 14px; }
 .field label { display: block; font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 6px; }
-.field input[type=text], .field input[type=tel], .field input[type=email], .field textarea, .field select {
+.field input[type=text], .field input[type=tel], .field input[type=email], .field input[type=password], .field textarea, .field select {
   width: 100%;
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);

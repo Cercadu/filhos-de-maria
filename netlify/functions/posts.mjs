@@ -51,11 +51,6 @@ export default async (req) => {
   const url = new URL(req.url);
   const admin = isAuthorized(req);
 
-  if (req.method === "GET" && url.searchParams.get("verify") === "1") {
-    if (!admin) return unauthorized();
-    return jsonResponse({ ok: true });
-  }
-
   if (req.method === "GET") {
     const { posts } = await readAll(url.origin);
     const visible = admin ? posts : posts.filter((p) => p.status === "published");

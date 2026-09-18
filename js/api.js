@@ -1,7 +1,69 @@
 window.AfimApi = (function () {
   function adminHeaders() {
-    const pass = sessionStorage.getItem("afim_admin_pass");
-    return pass ? { "x-admin-password": pass } : {};
+    const token = sessionStorage.getItem("afim_admin_token");
+    return token ? { authorization: `Bearer ${token}` } : {};
+  }
+
+  async function hasAdminUsers() {
+    const res = await fetch("/api/users?check=1");
+    if (!res.ok) throw new Error("Falha ao verificar contas");
+    const data = await res.json();
+    return data.hasUsers;
+  }
+
+  async function login(username, password) {
+    const res = await fetch("/api/login", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ username, password }),
+    });
+    if (!res.ok) return null;
+    return res.json();
+  }
+
+  async function createFirstUser(username, password) {
+    const res = await fetch("/api/users", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ username, password }),
+    });
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || "Falha ao criar conta");
+    return res.json();
+  }
+
+  async function getUsers() {
+    const res = await fetch("/api/users", { headers: adminHeaders() });
+    if (!res.ok) throw new Error("Falha ao carregar usuários");
+    return res.json();
+  }
+
+  async function createUser(username, password) {
+    const res = await fetch("/api/users", {
+      method: "POST",
+      headers: { "content-type": "application/json", ...adminHeaders() },
+      body: JSON.stringify({ username, password }),
+    });
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || "Falha ao criar usuário");
+    return res.json();
+  }
+
+  async function changePassword(username, password) {
+    const res = await fetch("/api/users", {
+      method: "PATCH",
+      headers: { "content-type": "application/json", ...adminHeaders() },
+      body: JSON.stringify({ username, password }),
+    });
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || "Falha ao trocar senha");
+    return res.json();
+  }
+
+  async function deleteUser(username) {
+    const res = await fetch(`/api/users?username=${encodeURIComponent(username)}`, {
+      method: "DELETE",
+      headers: adminHeaders(),
+    });
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || "Falha ao excluir usuário");
+    return res.json();
   }
 
   async function getPosts() {
@@ -203,13 +265,15 @@ window.AfimApi = (function () {
     return res.json();
   }
 
-  async function verifyPassword(pass) {
-    const res = await fetch("/api/posts?verify=1", { headers: { "x-admin-password": pass } });
-    return res.ok;
-  }
-
   return {
     adminHeaders,
+    hasAdminUsers,
+    login,
+    createFirstUser,
+    getUsers,
+    createUser,
+    changePassword,
+    deleteUser,
     getPosts,
     createPost,
     updatePost,
@@ -232,6 +296,5 @@ window.AfimApi = (function () {
     updateForm,
     deleteForm,
     uploadFile,
-    verifyPassword,
   };
 })();
