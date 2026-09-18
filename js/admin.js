@@ -51,6 +51,7 @@
   function showApp() {
     loginScreen.style.display = "none";
     adminApp.style.display = "block";
+    loadDashboard();
     loadPosts();
     loadCandles();
     loadPrayers();
@@ -119,6 +120,7 @@
     document.querySelectorAll(".admin-tabs")[0].querySelectorAll(".admin-tab").forEach((b) => b.classList.remove("active"));
     btn.classList.add("active");
     const tab = btn.dataset.tab;
+    document.getElementById("tab-dashboard").style.display = tab === "dashboard" ? "block" : "none";
     document.getElementById("tab-posts").style.display = tab === "posts" ? "block" : "none";
     document.getElementById("tab-candles").style.display = tab === "candles" ? "block" : "none";
     document.getElementById("tab-prayers").style.display = tab === "prayers" ? "block" : "none";
@@ -309,6 +311,47 @@
       chip.querySelector("button").addEventListener("click", () => { pendingAttachments.splice(idx, 1); renderAttachPreview(); });
       attachPreview.appendChild(chip);
     });
+  }
+
+  // ---------- Dashboard ----------
+  async function loadDashboard() {
+    const statGrid = document.getElementById("stat-grid");
+    const breakdown = document.getElementById("pages-breakdown");
+    try {
+      const { summary, pages } = await window.AfimApi.getAnalytics();
+      const tiles = [
+        ["Hoje", summary.today],
+        ["7 dias", summary.last7],
+        ["30 dias", summary.last30],
+        ["Total", summary.total],
+      ];
+      statGrid.innerHTML = tiles.map(([label, value]) => `
+        <div class="stat-tile">
+          <span class="stat-value">${value}</span>
+          <span class="stat-label">${label}</span>
+        </div>
+      `).join("");
+
+      if (!pages.length || !pages.some((p) => p.last30 > 0)) {
+        breakdown.innerHTML = `<div class="empty-state">Ainda sem acessos registrados nos últimos 30 dias.</div>`;
+        return;
+      }
+      const max = Math.max(...pages.map((p) => p.last30), 1);
+      breakdown.innerHTML = pages.map((p) => `
+        <div class="page-bar-row">
+          <div class="page-bar-head">
+            <span>${escapeHtml(p.label)}</span>
+            <span class="count">${p.last30} acessos</span>
+          </div>
+          <div class="page-bar-track">
+            <div class="page-bar-fill" style="width:${Math.round((p.last30 / max) * 100)}%"></div>
+          </div>
+        </div>
+      `).join("");
+    } catch {
+      statGrid.innerHTML = "";
+      breakdown.innerHTML = `<div class="empty-state">Erro ao carregar estatísticas.</div>`;
+    }
   }
 
   // ---------- Post modal ----------

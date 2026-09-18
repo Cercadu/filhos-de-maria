@@ -554,6 +554,51 @@ details.reading.evangelho summary .ref { color: #cfd9e6; }
 .install-banner span { flex: 1 1 200px; min-width: 0; font-size: 13px; }
 .install-banner button.close { margin-left: auto; background: none; border: none; font-size: 18px; color: var(--navy-dark); }
 
+/* ---------- Dashboard ---------- */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+@media (min-width: 520px) {
+  .stat-grid { grid-template-columns: repeat(4, 1fr); }
+}
+.stat-tile {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px 14px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.stat-tile .stat-value { font-size: 26px; font-weight: 700; color: var(--navy); line-height: 1; }
+.stat-tile .stat-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; }
+
+.page-bar-row { margin-bottom: 14px; }
+.page-bar-row .page-bar-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--navy);
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+.page-bar-row .page-bar-head span.count { color: var(--text-muted); font-weight: 400; }
+.page-bar-track {
+  background: var(--cream-2);
+  border-radius: 20px;
+  height: 10px;
+  overflow: hidden;
+}
+.page-bar-fill {
+  height: 100%;
+  background: var(--gold);
+  border-radius: 20px;
+  min-width: 4px;
+}
+
 /* ---------- Admin ---------- */
 .admin-shell { min-height: 100vh; background: var(--cream); }
 .admin-topbar {

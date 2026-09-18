@@ -215,6 +215,12 @@ window.AfimApi = (function () {
     return res.json();
   }
 
+  async function getAnalytics() {
+    const res = await fetch("/api/track", { headers: adminHeaders() });
+    if (!res.ok) throw new Error("Falha ao carregar estatísticas");
+    return res.json();
+  }
+
   async function uploadFile(file) {
     const form = new FormData();
     form.append("file", file);
@@ -232,6 +238,7 @@ window.AfimApi = (function () {
 
   return {
     adminHeaders,
+    getAnalytics,
     hasAdminUsers,
     login,
     createFirstUser,

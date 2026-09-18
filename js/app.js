@@ -7,6 +7,18 @@
     if (norm === path) link.classList.add("active");
   });
 
+  // Contador de acessos (não rastreia a área administrativa)
+  if (!location.pathname.startsWith("/admin")) {
+    const payload = JSON.stringify({ path: location.pathname });
+    try {
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon("/api/track", new Blob([payload], { type: "application/json" }));
+      } else {
+        fetch("/api/track", { method: "POST", headers: { "content-type": "application/json" }, body: payload, keepalive: true });
+      }
+    } catch {}
+  }
+
   // Service worker: registra e recarrega a página sozinho quando uma versão
   // nova assume o controle, para nunca ficar preso rodando código antigo
   // (ex: PWA instalado que fica muito tempo sem fechar).
