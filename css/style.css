@@ -428,6 +428,28 @@ details.reading.evangelho summary .ref { color: #cfd9e6; }
 }
 .pray-btn.done { background: var(--gold); color: var(--navy-dark); }
 
+.candle-card {
+  display: flex;
+  gap: 12px;
+  border-left-color: var(--gold);
+  background: linear-gradient(180deg, #fffdf8 0%, var(--white) 100%);
+}
+.candle-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 6px rgba(201, 156, 81, .5));
+  animation: flicker 2.4s ease-in-out infinite;
+}
+@keyframes flicker {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  45% { transform: scale(1.05) rotate(-2deg); opacity: .92; }
+  55% { transform: scale(0.97) rotate(2deg); opacity: 1; }
+}
+.candle-body { flex: 1; min-width: 0; }
+
+.testimonial-card { border-left-color: var(--navy-2); }
+.testimonial-card .name { color: var(--navy-2); }
+
 /* ---------- Footer ---------- */
 .site-footer {
   background: var(--navy-dark);

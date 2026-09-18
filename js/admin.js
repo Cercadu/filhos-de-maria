@@ -38,6 +38,7 @@
     adminApp.style.display = "block";
     loadPosts();
     loadPrayers();
+    loadTestimonials();
     loadForms();
   }
 
@@ -73,6 +74,7 @@
     const tab = btn.dataset.tab;
     document.getElementById("tab-posts").style.display = tab === "posts" ? "block" : "none";
     document.getElementById("tab-prayers").style.display = tab === "prayers" ? "block" : "none";
+    document.getElementById("tab-testimonials").style.display = tab === "testimonials" ? "block" : "none";
     document.getElementById("tab-forms").style.display = tab === "forms" ? "block" : "none";
   });
 
@@ -417,6 +419,77 @@
         await window.AfimApi.deletePrayer(p.id);
         window.afimToast("Pedido excluído.");
         loadPrayers();
+      });
+      list.appendChild(el);
+    });
+  }
+
+  document.getElementById("cleanup-prayers-btn").addEventListener("click", async () => {
+    if (!confirm("Remover pedidos com mais de 30 dias (exceto os ainda pendentes de revisão)? Essa ação não pode ser desfeita.")) return;
+    try {
+      const { removed } = await window.AfimApi.cleanupOldPrayers();
+      window.afimToast(`${removed} pedido(s) antigo(s) removido(s).`);
+      loadPrayers();
+    } catch (err) {
+      window.afimToast("Erro ao limpar: " + err.message);
+    }
+  });
+
+  // ---------- Testimonials ----------
+  let currentTestimonialFilter = "pending";
+  document.querySelectorAll('#tab-testimonials .admin-tabs')[0].addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-tfilter]");
+    if (!btn) return;
+    document.querySelectorAll('#tab-testimonials .admin-tabs [data-tfilter]').forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentTestimonialFilter = btn.dataset.tfilter;
+    renderTestimonialsList();
+  });
+
+  let allTestimonials = [];
+  async function loadTestimonials() {
+    try {
+      const { testimonials } = await window.AfimApi.getTestimonials();
+      allTestimonials = testimonials;
+      renderTestimonialsList();
+    } catch {
+      document.getElementById("admin-testimonials-list").innerHTML = `<div class="empty-state">Erro ao carregar testemunhos.</div>`;
+    }
+  }
+
+  function renderTestimonialsList() {
+    const list = document.getElementById("admin-testimonials-list");
+    const filtered = currentTestimonialFilter === "all" ? allTestimonials : allTestimonials.filter((t) => t.status === currentTestimonialFilter);
+    list.innerHTML = "";
+    if (!filtered.length) {
+      list.innerHTML = `<div class="empty-state">Nenhum testemunho nessa categoria.</div>`;
+      return;
+    }
+    filtered.forEach((t) => {
+      const el = document.createElement("div");
+      el.className = "prayer-card";
+      el.innerHTML = `
+        <div class="name">${escapeHtml(t.name || "Anônimo")}</div>
+        <div class="msg">${escapeHtml(t.message)}</div>
+        <div class="meta" style="margin-top:8px;">
+          <span class="date">${formatDate(t.createdAt)}</span>
+          <div class="actions" style="display:flex;gap:6px;">
+            ${t.status !== "approved" ? '<button class="btn btn-sm btn-primary" data-action="approve">Aprovar</button>' : ""}
+            ${t.status !== "rejected" ? '<button class="btn btn-sm btn-ghost" data-action="reject">Rejeitar</button>' : ""}
+            <button class="btn btn-sm btn-danger" data-action="delete">Excluir</button>
+          </div>
+        </div>
+      `;
+      const approveBtn = el.querySelector('[data-action="approve"]');
+      const rejectBtn = el.querySelector('[data-action="reject"]');
+      const deleteBtn = el.querySelector('[data-action="delete"]');
+      if (approveBtn) approveBtn.addEventListener("click", async () => { await window.AfimApi.moderateTestimonial(t.id, "approved"); window.afimToast("Testemunho aprovado."); loadTestimonials(); });
+      if (rejectBtn) rejectBtn.addEventListener("click", async () => { await window.AfimApi.moderateTestimonial(t.id, "rejected"); window.afimToast("Testemunho rejeitado."); loadTestimonials(); });
+      deleteBtn.addEventListener("click", async () => {
+        if (!confirm("Excluir este testemunho permanentemente?")) return;
+        await window.AfimApi.deleteTestimonial(t.id);
+        window.afimToast("Testemunho excluído.");
+        loadTestimonials();
       });
       list.appendChild(el);
     });

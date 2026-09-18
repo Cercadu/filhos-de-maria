@@ -5,6 +5,8 @@ import { stripHtml } from "./_lib/sanitize.mjs";
 const KEY = "prayers.json";
 const MAX_MESSAGE_LEN = 1000;
 const MAX_NAME_LEN = 80;
+const WALL_WINDOW_DAYS = 7;
+const CLEANUP_AFTER_DAYS = 30;
 
 function store() {
   return getStore({ name: "afim-prayers", consistency: "strong" });
@@ -44,8 +46,9 @@ export default async (req) => {
       const sorted = [...prayers].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       return jsonResponse({ prayers: sorted });
     }
+    const cutoff = Date.now() - WALL_WINDOW_DAYS * 24 * 60 * 60 * 1000;
     const approved = prayers
-      .filter((p) => p.status === "approved" && p.isPublic)
+      .filter((p) => p.status === "approved" && p.isPublic && new Date(p.createdAt).getTime() >= cutoff)
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       .map(publicView);
     return jsonResponse({ prayers: approved });
@@ -113,6 +116,17 @@ export default async (req) => {
 
   if (req.method === "DELETE") {
     if (!admin) return unauthorized();
+
+    if (url.searchParams.get("cleanup") === "1") {
+      const cutoff = Date.now() - CLEANUP_AFTER_DAYS * 24 * 60 * 60 * 1000;
+      const prayers = await readAll();
+      const kept = prayers.filter(
+        (p) => p.status === "pending" || new Date(p.createdAt).getTime() >= cutoff
+      );
+      await writeAll(kept);
+      return jsonResponse({ ok: true, removed: prayers.length - kept.length });
+    }
+
     const id = url.searchParams.get("id");
     if (!id) return jsonResponse({ error: "missing_id" }, { status: 400 });
     const prayers = await readAll();

@@ -84,6 +84,50 @@ window.AfimApi = (function () {
     return res.json();
   }
 
+  async function cleanupOldPrayers() {
+    const res = await fetch("/api/prayers?cleanup=1", {
+      method: "DELETE",
+      headers: adminHeaders(),
+    });
+    if (!res.ok) throw new Error("Falha ao limpar pedidos antigos");
+    return res.json();
+  }
+
+  async function getTestimonials() {
+    const res = await fetch("/api/testimonials", { headers: adminHeaders() });
+    if (!res.ok) throw new Error("Falha ao carregar testemunhos");
+    return res.json();
+  }
+
+  async function submitTestimonial(payload) {
+    const res = await fetch("/api/testimonials", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || "Falha ao enviar testemunho");
+    return res.json();
+  }
+
+  async function moderateTestimonial(id, status) {
+    const res = await fetch("/api/testimonials", {
+      method: "PATCH",
+      headers: { "content-type": "application/json", ...adminHeaders() },
+      body: JSON.stringify({ id, status }),
+    });
+    if (!res.ok) throw new Error("Falha ao atualizar testemunho");
+    return res.json();
+  }
+
+  async function deleteTestimonial(id) {
+    const res = await fetch(`/api/testimonials?id=${encodeURIComponent(id)}`, {
+      method: "DELETE",
+      headers: adminHeaders(),
+    });
+    if (!res.ok) throw new Error("Falha ao excluir testemunho");
+    return res.json();
+  }
+
   async function getForms() {
     const res = await fetch("/api/forms", { headers: adminHeaders() });
     if (!res.ok) throw new Error("Falha ao carregar formulários");
@@ -150,6 +194,11 @@ window.AfimApi = (function () {
     prayFor,
     moderatePrayer,
     deletePrayer,
+    cleanupOldPrayers,
+    getTestimonials,
+    submitTestimonial,
+    moderateTestimonial,
+    deleteTestimonial,
     getForms,
     createForm,
     updateForm,

@@ -34,7 +34,8 @@
   <div class="container" style="padding-top:18px;padding-bottom:60px;">
     <div class="admin-tabs">
       <button class="admin-tab active" data-tab="posts">📰 Publicações</button>
-      <button class="admin-tab" data-tab="prayers">🙏 Pedidos de Oração</button>
+      <button class="admin-tab" data-tab="prayers">🕯️ Pedidos de Oração</button>
+      <button class="admin-tab" data-tab="testimonials">✨ Testemunhos</button>
       <button class="admin-tab" data-tab="forms">📝 Formulários</button>
     </div>
 
@@ -44,13 +45,27 @@
     </section>
 
     <section id="tab-prayers" style="display:none;">
-      <div class="admin-tabs" style="margin-bottom:14px;">
-        <button class="admin-tab active" data-filter="pending">Pendentes</button>
-        <button class="admin-tab" data-filter="approved">Aprovados</button>
-        <button class="admin-tab" data-filter="rejected">Rejeitados</button>
-        <button class="admin-tab" data-filter="all">Todos</button>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+        <div class="admin-tabs" style="margin-bottom:0;">
+          <button class="admin-tab active" data-filter="pending">Pendentes</button>
+          <button class="admin-tab" data-filter="approved">Aprovados</button>
+          <button class="admin-tab" data-filter="rejected">Rejeitados</button>
+          <button class="admin-tab" data-filter="all">Todos</button>
+        </div>
+        <button class="btn btn-sm btn-ghost" id="cleanup-prayers-btn">🧹 Limpar antigos (+30 dias)</button>
       </div>
+      <p class="small-muted" style="margin-top:-8px;margin-bottom:14px;">O mural público do site mostra só pedidos aprovados dos últimos 7 dias. Aqui você continua vendo o histórico completo.</p>
       <div id="admin-prayers-list"><div class="spinner"></div></div>
+    </section>
+
+    <section id="tab-testimonials" style="display:none;">
+      <div class="admin-tabs" style="margin-bottom:14px;">
+        <button class="admin-tab active" data-tfilter="pending">Pendentes</button>
+        <button class="admin-tab" data-tfilter="approved">Aprovados</button>
+        <button class="admin-tab" data-tfilter="rejected">Rejeitados</button>
+        <button class="admin-tab" data-tfilter="all">Todos</button>
+      </div>
+      <div id="admin-testimonials-list"><div class="spinner"></div></div>
     </section>
 
     <section id="tab-forms" style="display:none;">
