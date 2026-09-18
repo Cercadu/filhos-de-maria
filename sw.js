@@ -1,4 +1,4 @@
-const CACHE_VERSION = "afim-v5";
+const CACHE_VERSION = "afim-v6";
 const APP_SHELL = [
   "/",
   "/index.html",
@@ -37,6 +37,10 @@ self.addEventListener("fetch", (event) => {
   if (request.method !== "GET") return;
 
   const url = new URL(request.url);
+
+  // Ignora esquemas que a Cache API não suporta (ex: chrome-extension://,
+  // requisições injetadas por extensões do navegador) - deixa passar direto.
+  if (url.protocol !== "http:" && url.protocol !== "https:") return;
 
   // API: sempre tenta rede primeiro (dados dinâmicos), sem cache de fallback de conteúdo sensível
   if (url.pathname.startsWith("/api/")) {
