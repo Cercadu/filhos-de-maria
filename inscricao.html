@@ -3,24 +3,15 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>AFIM - Associação Filhos de Maria</title>
-<meta name="description" content="Informativos, liturgia diária e pedidos de oração da Associação Filhos de Maria (AFIM)." />
+<title>Inscrição Projeto Semear - AFIM</title>
 <meta name="theme-color" content="#0f2645" />
 <link rel="manifest" href="/manifest.json" />
 <link rel="icon" href="/favicon.ico" />
 <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="AFIM" />
 <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
-
-<div class="install-banner" id="install-banner">
-  <span>📲 Instale o app da AFIM na tela inicial do seu telefone.</span>
-  <button class="btn btn-sm btn-primary" id="install-btn" style="background:#0f2645;">Instalar</button>
-  <button class="close" id="install-close" aria-label="Fechar">&times;</button>
-</div>
 
 <header class="site-header">
   <div class="container">
@@ -40,41 +31,22 @@
   </div>
 </header>
 
-<section class="hero">
-  <div class="container">
-    <img class="hero-logo" src="/assets/img/logo-badge.png" alt="AFIM - Associação Filhos de Maria" />
-    <h1>Associação Filhos de Maria</h1>
-    <p class="tagline">"Semeando valores hoje, colhendo um mundo melhor amanhã."</p>
-    <p class="hero-verse">"Deixai vir a mim as crianças..." (Mc 10,14)</p>
-  </div>
-</section>
-
 <main class="container section">
   <div class="section-title">
     <span class="bar"></span>
-    <h2>Informativo AFIM</h2>
+    <h2>Inscrição · Projeto Semear</h2>
   </div>
-  <div id="posts-list">
+
+  <div class="card">
+    <div class="card-body">
+      <p class="excerpt">Preencha a ficha de inscrição para participação de crianças, adolescentes (05 a 14 anos) ou para se tornar voluntário(a) do Projeto Semear. Os dados são usados apenas pela equipe da AFIM para organização das turmas e contato com os responsáveis.</p>
+    </div>
+  </div>
+
+  <div id="forms-list">
     <div class="spinner"></div>
   </div>
 </main>
-
-<section class="container section" id="sobre">
-  <div class="section-title">
-    <span class="bar"></span>
-    <h2>Projeto Semear</h2>
-  </div>
-  <div class="card">
-    <div class="card-body">
-      <p class="excerpt">Cultivando valores, transformando vidas! O espaço infantil e juvenil do Grupo Filhos de Maria acolhe crianças e adolescentes com oficinas de artes, música, teatro, catequese e ação social — plantando hoje um futuro melhor para crianças, adolescentes e comunidade.</p>
-      <div class="attachments">
-        <span class="attachment-chip">🌱 Sementinhas da Fé · 05 a 07 anos</span>
-        <span class="attachment-chip">🌿 Pequenos Discípulos · 08 a 10 anos</span>
-        <span class="attachment-chip">🌾 Geração de Propósito · 11 a 14 anos</span>
-      </div>
-    </div>
-  </div>
-</section>
 
 <nav class="bottom-nav">
   <a href="/" data-nav="/"><span class="icon">🏠</span>Início</a>
@@ -86,7 +58,6 @@
 <footer class="site-footer">
   <div class="container">
     <img src="/assets/img/logo-badge.png" alt="AFIM" />
-    <p class="verse">"Com Maria, semeando esperança em cada coração."</p>
     <p>Associação Filhos de Maria (AFIM)</p>
     <p class="fine">© <span id="year"></span> AFIM · <a href="/admin/">Área administrativa</a></p>
   </div>
@@ -94,7 +65,7 @@
 
 <script src="/js/app.js"></script>
 <script src="/js/api.js"></script>
-<script src="/js/home.js"></script>
+<script src="/js/inscricao.js"></script>
 <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
 </body>
 </html>

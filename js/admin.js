@@ -38,6 +38,7 @@
     adminApp.style.display = "block";
     loadPosts();
     loadPrayers();
+    loadForms();
   }
 
   loginBtn.addEventListener("click", async () => {
@@ -72,6 +73,7 @@
     const tab = btn.dataset.tab;
     document.getElementById("tab-posts").style.display = tab === "posts" ? "block" : "none";
     document.getElementById("tab-prayers").style.display = tab === "prayers" ? "block" : "none";
+    document.getElementById("tab-forms").style.display = tab === "forms" ? "block" : "none";
   });
 
   // ---------- Utils ----------
@@ -418,6 +420,99 @@
       });
       list.appendChild(el);
     });
+  }
+
+  // ---------- Forms (links de inscrição) ----------
+  const formModal = document.getElementById("form-modal");
+  const formIdInput = document.getElementById("form-id");
+  const formTitleInput = document.getElementById("form-title");
+  const formDescriptionInput = document.getElementById("form-description");
+  const formUrlInput = document.getElementById("form-url");
+  const formActiveInput = document.getElementById("form-active");
+
+  function openFormModal(form) {
+    formIdInput.value = form ? form.id : "";
+    document.getElementById("form-modal-title").textContent = form ? "Editar formulário" : "Novo formulário";
+    formTitleInput.value = form ? form.title : "";
+    formDescriptionInput.value = form ? form.description : "";
+    formUrlInput.value = form ? form.url : "";
+    formActiveInput.checked = form ? form.active : true;
+    formModal.classList.add("show");
+  }
+  function closeFormModal() { formModal.classList.remove("show"); }
+
+  document.getElementById("new-form-btn").addEventListener("click", () => openFormModal(null));
+  document.getElementById("cancel-form-btn").addEventListener("click", closeFormModal);
+  formModal.addEventListener("click", (e) => { if (e.target === formModal) closeFormModal(); });
+
+  document.getElementById("save-form-btn").addEventListener("click", async () => {
+    const title = formTitleInput.value.trim();
+    const formUrl = formUrlInput.value.trim();
+    if (!title || !formUrl) {
+      window.afimToast("Preencha o título e o link do formulário.");
+      return;
+    }
+    const payload = {
+      title,
+      description: formDescriptionInput.value.trim(),
+      url: formUrl,
+      active: formActiveInput.checked,
+    };
+
+    const saveBtn = document.getElementById("save-form-btn");
+    saveBtn.disabled = true;
+    saveBtn.textContent = "Salvando...";
+    try {
+      if (formIdInput.value) {
+        await window.AfimApi.updateForm({ id: formIdInput.value, ...payload });
+      } else {
+        await window.AfimApi.createForm(payload);
+      }
+      closeFormModal();
+      window.afimToast("Formulário salvo com sucesso!");
+      loadForms();
+    } catch (err) {
+      window.afimToast("Erro ao salvar: " + err.message);
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.textContent = "Salvar formulário";
+    }
+  });
+
+  async function loadForms() {
+    const list = document.getElementById("admin-forms-list");
+    try {
+      const { forms } = await window.AfimApi.getForms();
+      list.innerHTML = "";
+      if (!forms.length) {
+        list.innerHTML = `<div class="empty-state">Nenhum formulário cadastrado. Clique em "Novo formulário" para adicionar (ex: ficha do Projeto Semear no Google Forms).</div>`;
+        return;
+      }
+      forms.forEach((form) => {
+        const row = document.createElement("div");
+        row.className = "post-row";
+        row.innerHTML = `
+          <div class="info">
+            <strong>${escapeHtml(form.title)}</strong>
+            <span class="small-muted">${escapeHtml(form.url)} · <span class="tag ${form.active ? "published" : ""}">${form.active ? "Visível" : "Oculto"}</span></span>
+          </div>
+          <div class="actions">
+            <button class="btn btn-sm btn-outline" data-action="edit">Editar</button>
+            <button class="btn btn-sm btn-danger" data-action="delete">Excluir</button>
+          </div>
+        `;
+        row.querySelector('[data-action="edit"]').addEventListener("click", () => openFormModal(form));
+        row.querySelector('[data-action="delete"]').addEventListener("click", async () => {
+          if (!confirm(`Excluir o formulário "${form.title}"?`)) return;
+          await window.AfimApi.deleteForm(form.id);
+          window.afimToast("Formulário excluído.");
+          loadForms();
+        });
+        list.appendChild(row);
+      });
+    } catch {
+      list.innerHTML = `<div class="empty-state">Erro ao carregar formulários.</div>`;
+    }
   }
 
   tryStoredLogin();

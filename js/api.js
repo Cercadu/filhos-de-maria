@@ -84,6 +84,41 @@ window.AfimApi = (function () {
     return res.json();
   }
 
+  async function getForms() {
+    const res = await fetch("/api/forms", { headers: adminHeaders() });
+    if (!res.ok) throw new Error("Falha ao carregar formulários");
+    return res.json();
+  }
+
+  async function createForm(payload) {
+    const res = await fetch("/api/forms", {
+      method: "POST",
+      headers: { "content-type": "application/json", ...adminHeaders() },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || "Falha ao salvar formulário");
+    return res.json();
+  }
+
+  async function updateForm(payload) {
+    const res = await fetch("/api/forms", {
+      method: "PUT",
+      headers: { "content-type": "application/json", ...adminHeaders() },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || "Falha ao atualizar formulário");
+    return res.json();
+  }
+
+  async function deleteForm(id) {
+    const res = await fetch(`/api/forms?id=${encodeURIComponent(id)}`, {
+      method: "DELETE",
+      headers: adminHeaders(),
+    });
+    if (!res.ok) throw new Error("Falha ao excluir formulário");
+    return res.json();
+  }
+
   async function uploadFile(file) {
     const form = new FormData();
     form.append("file", file);
@@ -115,6 +150,10 @@ window.AfimApi = (function () {
     prayFor,
     moderatePrayer,
     deletePrayer,
+    getForms,
+    createForm,
+    updateForm,
+    deleteForm,
     uploadFile,
     verifyPassword,
   };

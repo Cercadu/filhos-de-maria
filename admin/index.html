@@ -35,6 +35,7 @@
     <div class="admin-tabs">
       <button class="admin-tab active" data-tab="posts">📰 Publicações</button>
       <button class="admin-tab" data-tab="prayers">🙏 Pedidos de Oração</button>
+      <button class="admin-tab" data-tab="forms">📝 Formulários</button>
     </div>
 
     <section id="tab-posts">
@@ -51,6 +52,40 @@
       </div>
       <div id="admin-prayers-list"><div class="spinner"></div></div>
     </section>
+
+    <section id="tab-forms" style="display:none;">
+      <p class="small-muted" style="margin-bottom:14px;">Cadastre aqui os links dos formulários (Google Forms ou outro) que devem aparecer na aba "Inscrição" do site. Ideal para as fichas do Projeto Semear (crianças, adolescentes e voluntários).</p>
+      <button class="btn btn-gold" id="new-form-btn" style="margin-bottom:16px;">+ Novo formulário</button>
+      <div id="admin-forms-list"><div class="spinner"></div></div>
+    </section>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="form-modal">
+  <div class="modal">
+    <h3 id="form-modal-title">Novo formulário</h3>
+    <input type="hidden" id="form-id" />
+
+    <div class="field">
+      <label for="form-title">Título *</label>
+      <input type="text" id="form-title" placeholder="Ex: Ficha de Inscrição - Criança/Adolescente" />
+    </div>
+    <div class="field">
+      <label for="form-description">Descrição (opcional)</label>
+      <textarea id="form-description" style="min-height:60px;" placeholder="Breve explicação sobre o formulário"></textarea>
+    </div>
+    <div class="field">
+      <label for="form-url">Link do formulário (Google Forms ou outro) *</label>
+      <input type="text" id="form-url" placeholder="https://forms.gle/..." />
+    </div>
+    <label class="checkbox-row" style="margin-bottom:16px;">
+      <input type="checkbox" id="form-active" checked />
+      <span>Visível na página de Inscrição do site</span>
+    </label>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-ghost" id="cancel-form-btn" style="flex:1;">Cancelar</button>
+      <button class="btn btn-primary" id="save-form-btn" style="flex:2;">Salvar formulário</button>
+    </div>
   </div>
 </div>
 
