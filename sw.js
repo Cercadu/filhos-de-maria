@@ -1,4 +1,4 @@
-const CACHE_VERSION = "afim-v1";
+const CACHE_VERSION = "afim-v2";
 const APP_SHELL = [
   "/",
   "/index.html",
@@ -13,6 +13,7 @@ const APP_SHELL = [
   "/js/oracao.js",
   "/manifest.json",
   "/assets/img/logo.png",
+  "/assets/img/logo-badge.png",
   "/assets/icons/icon-192.png",
   "/assets/icons/icon-512.png",
 ];

@@ -4,6 +4,9 @@
   const fullDateEl = document.getElementById("date-full");
   const prevBtn = document.getElementById("prev-day");
   const nextBtn = document.getElementById("next-day");
+  const todayBtn = document.getElementById("today-btn");
+  const dateLabelBtn = document.getElementById("date-label-btn");
+  const datePicker = document.getElementById("date-picker");
 
   const COLOR_MAP = {
     Verde: "#2f7a4f",
@@ -27,9 +30,9 @@
     fullDateEl.textContent = full;
   }
 
-  function readingBlock(cls, refIcon, title, ref, bodyHtml) {
+  function readingBlock(cls, refIcon, title, ref, bodyHtml, openByDefault) {
     return `
-      <details class="reading ${cls}">
+      <details class="reading ${cls}" ${openByDefault ? "open" : ""}>
         <summary>
           <span>${refIcon} ${title}</span>
           <span class="ref">${ref || ""}</span>
@@ -37,6 +40,10 @@
         <div class="reading-body">${bodyHtml}</div>
       </details>
     `;
+  }
+
+  function sectionLabel(text) {
+    return `<div class="reading-section-label">${text}</div>`;
   }
 
   function renderLiturgy(data) {
@@ -51,27 +58,46 @@
       <h3 class="liturgy-title">${escapeHtml(data.liturgia || "")}</h3>
     `;
 
+    const antifonas = data.antifonas || {};
+    if (antifonas.entrada || antifonas.comunhao) {
+      html += `<div class="antiphons-box">`;
+      if (antifonas.entrada) {
+        html += `<p><span class="antiphon-label">Antífona de Entrada</span>${escapeHtml(antifonas.entrada)}</p>`;
+      }
+      if (antifonas.comunhao) {
+        html += `<p><span class="antiphon-label">Antífona da Comunhão</span>${escapeHtml(antifonas.comunhao)}</p>`;
+      }
+      html += `</div>`;
+    }
+
     const leituras = data.leituras || {};
+    const hasLeituras = (leituras.primeiraLeitura || []).length || (leituras.salmo || []).length ||
+      (leituras.segundaLeitura || []).length || (leituras.evangelho || []).length;
 
-    (leituras.primeiraLeitura || []).forEach((l) => {
-      html += readingBlock("primeira", "📜", "Primeira Leitura", l.referencia, escapeHtml(l.texto));
-    });
+    if (hasLeituras) {
+      html += sectionLabel("📖 Leituras do Dia");
 
-    (leituras.salmo || []).forEach((s) => {
-      const refrao = s.refrao ? `<div class="reading-refrao">${escapeHtml(s.refrao)}</div>` : "";
-      html += readingBlock("salmo", "🎵", "Salmo Responsorial", s.referencia, refrao + escapeHtml(s.texto));
-    });
+      (leituras.primeiraLeitura || []).forEach((l) => {
+        html += readingBlock("primeira", "📜", "Primeira Leitura", l.referencia, escapeHtml(l.texto));
+      });
 
-    (leituras.segundaLeitura || []).forEach((l) => {
-      html += readingBlock("segunda", "📜", "Segunda Leitura", l.referencia, escapeHtml(l.texto));
-    });
+      (leituras.salmo || []).forEach((s) => {
+        const refrao = s.refrao ? `<div class="reading-refrao">${escapeHtml(s.refrao)}</div>` : "";
+        html += readingBlock("salmo", "🎵", "Salmo Responsorial", s.referencia, refrao + escapeHtml(s.texto));
+      });
 
-    (leituras.evangelho || []).forEach((e) => {
-      html += readingBlock("evangelho", "✝️", "Evangelho", e.referencia, escapeHtml(e.texto));
-    });
+      (leituras.segundaLeitura || []).forEach((l) => {
+        html += readingBlock("segunda", "📜", "Segunda Leitura", l.referencia, escapeHtml(l.texto));
+      });
+
+      (leituras.evangelho || []).forEach((e) => {
+        html += readingBlock("evangelho", "✝️", "Evangelho", e.referencia, escapeHtml(e.texto), true);
+      });
+    }
 
     const oracoes = data.oracoes || {};
     if (oracoes.coleta || oracoes.oferendas || oracoes.comunhao) {
+      html += sectionLabel("🙏 Orações da Missa");
       html += `<div class="prayer-texts">`;
       if (oracoes.coleta) html += readingBlock("oracao", "🙏", "Oração da Coleta", "", escapeHtml(oracoes.coleta));
       if (oracoes.oferendas) html += readingBlock("oracao", "🙏", "Oração sobre as Oferendas", "", escapeHtml(oracoes.oferendas));
@@ -111,12 +137,35 @@
     }
   }
 
+  function isoDate(date) {
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+  }
+
   prevBtn.addEventListener("click", () => {
     currentDate.setDate(currentDate.getDate() - 1);
     loadLiturgy(currentDate);
   });
   nextBtn.addEventListener("click", () => {
     currentDate.setDate(currentDate.getDate() + 1);
+    loadLiturgy(currentDate);
+  });
+  todayBtn.addEventListener("click", () => {
+    currentDate = new Date();
+    loadLiturgy(currentDate);
+  });
+  dateLabelBtn.addEventListener("click", () => {
+    datePicker.value = isoDate(currentDate);
+    if (typeof datePicker.showPicker === "function") {
+      datePicker.showPicker();
+    } else {
+      datePicker.focus();
+      datePicker.click();
+    }
+  });
+  datePicker.addEventListener("change", () => {
+    if (!datePicker.value) return;
+    const [y, m, d] = datePicker.value.split("-").map(Number);
+    currentDate = new Date(y, m - 1, d);
     loadLiturgy(currentDate);
   });
 
