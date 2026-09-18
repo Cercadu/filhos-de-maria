@@ -6,13 +6,12 @@ Site/PWA (instalável no celular) da Associação Filhos de Maria: informativos 
 
 Site estático (HTML/CSS/JS puro, sem framework/build) + **Netlify Functions** + **Netlify Blobs** como "banco de dados" em JSON. Sem servidor de banco de dados externo — mesmo padrão usado no projeto [Ministério Chave de Davi](https://github.com/Cercadu/ministeriochavededavi).
 
-- `index.html`, `liturgia.html`, `oracao.html`, `inscricao.html` — páginas públicas
+- `index.html`, `liturgia.html`, `oracao.html` — páginas públicas
 - `admin/index.html` — painel administrativo (login individual por usuário/senha)
-- `netlify/functions/posts.mjs` — CRUD de publicações (armazenado em Netlify Blobs)
+- `netlify/functions/posts.mjs` — CRUD de publicações (armazenado em Netlify Blobs, com agendamento opcional de publicação)
 - `netlify/functions/prayers.mjs` — pedidos de oração (envio público + moderação admin, mural mostra só últimos 7 dias)
 - `netlify/functions/candles.mjs` — velas digitais (gesto simbólico, sem moderação, some após 24h)
 - `netlify/functions/testimonials.mjs` — mural de testemunhos (envio público + moderação admin)
-- `netlify/functions/forms.mjs` — links de formulários externos (ex: Google Forms) geridos pelo admin
 - `netlify/functions/users.mjs` + `login.mjs` — contas de admin (usuário/senha com hash, sessão via token assinado)
 - `netlify/functions/upload.mjs` — upload de imagens/documentos (admin)
 - `netlify/functions/media.mjs` — entrega dos arquivos enviados
@@ -45,4 +44,4 @@ Isso sobe o site com as Functions e o Netlify Blobs emulado localmente em `http:
 
 ## Publicação de conteúdo
 
-Acesse `/admin/`, entre com seu usuário e senha e clique em "Nova publicação". O editor permite colar texto formatado (Ctrl+C/Ctrl+V do Word, por exemplo), inserir imagens no corpo do texto e anexar imagens/documentos ao final da publicação.
+Acesse `/admin/`, entre com seu usuário e senha e clique em "Nova publicação". O editor permite colar texto formatado (Ctrl+C/Ctrl+V do Word, por exemplo), inserir imagens no corpo do texto e anexar imagens/documentos ao final da publicação. Links externos (como um formulário do Google Forms) podem ser colados direto no texto da publicação — não existe uma aba separada de "Inscrição"/"Formulários", divulgação de fichas e afins vira uma publicação normal no Informativo.

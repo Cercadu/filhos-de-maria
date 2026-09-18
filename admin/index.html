@@ -48,7 +48,10 @@
   <div class="admin-topbar">
     <div class="container">
       <span><strong>AFIM</strong> · Painel Administrativo</span>
-      <button class="btn btn-sm btn-ghost" id="logout-btn" style="background:rgba(255,255,255,.12);color:#fff;">Sair</button>
+      <div style="display:flex;gap:8px;">
+        <a href="/" class="btn btn-sm btn-ghost" style="background:rgba(255,255,255,.12);color:#fff;text-decoration:none;">🏠 Início</a>
+        <button class="btn btn-sm btn-ghost" id="logout-btn" style="background:rgba(255,255,255,.12);color:#fff;">Sair</button>
+      </div>
     </div>
   </div>
 
@@ -58,7 +61,6 @@
       <button class="admin-tab" data-tab="candles">🕯️ Velas</button>
       <button class="admin-tab" data-tab="prayers">🙏 Pedidos de Oração</button>
       <button class="admin-tab" data-tab="testimonials">✨ Testemunhos</button>
-      <button class="admin-tab" data-tab="forms">📝 Formulários</button>
       <button class="admin-tab" data-tab="users">🔑 Usuários</button>
     </div>
 
@@ -94,12 +96,6 @@
         <button class="admin-tab" data-tfilter="all">Todos</button>
       </div>
       <div id="admin-testimonials-list"><div class="spinner"></div></div>
-    </section>
-
-    <section id="tab-forms" style="display:none;">
-      <p class="small-muted" style="margin-bottom:14px;">Cadastre aqui os links dos formulários (Google Forms ou outro) que devem aparecer na aba "Inscrição" do site. Ideal para as fichas do Projeto Semear (crianças, adolescentes e voluntários).</p>
-      <button class="btn btn-gold" id="new-form-btn" style="margin-bottom:16px;">+ Novo formulário</button>
-      <div id="admin-forms-list"><div class="spinner"></div></div>
     </section>
 
     <section id="tab-users" style="display:none;">
@@ -141,34 +137,6 @@
     <div style="display:flex;gap:10px;margin-top:6px;">
       <button class="btn btn-ghost" id="cancel-password-btn" style="flex:1;">Cancelar</button>
       <button class="btn btn-primary" id="save-password-btn" style="flex:2;">Salvar nova senha</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-backdrop" id="form-modal">
-  <div class="modal">
-    <h3 id="form-modal-title">Novo formulário</h3>
-    <input type="hidden" id="form-id" />
-
-    <div class="field">
-      <label for="form-title">Título *</label>
-      <input type="text" id="form-title" placeholder="Ex: Ficha de Inscrição - Criança/Adolescente" />
-    </div>
-    <div class="field">
-      <label for="form-description">Descrição (opcional)</label>
-      <textarea id="form-description" style="min-height:60px;" placeholder="Breve explicação sobre o formulário"></textarea>
-    </div>
-    <div class="field">
-      <label for="form-url">Link do formulário (Google Forms ou outro) *</label>
-      <input type="text" id="form-url" placeholder="https://forms.gle/..." />
-    </div>
-    <label class="checkbox-row" style="margin-bottom:16px;">
-      <input type="checkbox" id="form-active" checked />
-      <span>Visível na página de Inscrição do site</span>
-    </label>
-    <div style="display:flex;gap:10px;">
-      <button class="btn btn-ghost" id="cancel-form-btn" style="flex:1;">Cancelar</button>
-      <button class="btn btn-primary" id="save-form-btn" style="flex:2;">Salvar formulário</button>
     </div>
   </div>
 </div>

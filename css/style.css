@@ -53,7 +53,7 @@ button { font: inherit; cursor: pointer; }
 .container {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 0 16px;
+  padding: 0 max(20px, env(safe-area-inset-right)) 0 max(20px, env(safe-area-inset-left));
 }
 
 /* ---------- Header ---------- */

@@ -1,10 +1,9 @@
-const CACHE_VERSION = "afim-v4";
+const CACHE_VERSION = "afim-v5";
 const APP_SHELL = [
   "/",
   "/index.html",
   "/liturgia.html",
   "/oracao.html",
-  "/inscricao.html",
   "/offline.html",
   "/css/style.css",
   "/js/app.js",
