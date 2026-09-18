@@ -1,0 +1,12 @@
+{
+  "name": "afim-filhos-de-maria",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Site/PWA da Associação Filhos de Maria (AFIM) - informativos, liturgia diária e pedidos de oração",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0"
+  },
+  "devDependencies": {
+    "netlify-cli": "^27.8.0"
+  }
+}

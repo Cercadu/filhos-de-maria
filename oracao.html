@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Pedidos de Oração - AFIM</title>
+<meta name="theme-color" content="#0f2645" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a href="/" class="brand">
+      <img src="/assets/img/logo.png" alt="AFIM" />
+      <span class="brand-text">
+        <strong>AFIM</strong>
+        <span>Filhos de Maria</span>
+      </span>
+    </a>
+    <nav class="header-nav">
+      <a href="/" data-nav="/">Início</a>
+      <a href="/liturgia.html" data-nav="/liturgia.html">Liturgia</a>
+      <a href="/oracao.html" data-nav="/oracao.html">Orações</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container section">
+  <div class="section-title">
+    <span class="bar"></span>
+    <h2>Pedidos de Oração</h2>
+  </div>
+  <p class="small-muted" style="margin-top:-10px;margin-bottom:16px;">"Não andeis ansiosos por coisa alguma; em tudo, porém, sejam conhecidas, diante de Deus, as vossas petições, pela oração e súplicas." (Fl 4,6)</p>
+
+  <form class="prayer-form" id="prayer-form">
+    <div class="field">
+      <label for="p-name">Seu nome (opcional)</label>
+      <input type="text" id="p-name" maxlength="80" placeholder="Deixe em branco para orar de forma anônima" />
+    </div>
+    <div class="field">
+      <label for="p-message">Seu pedido de oração *</label>
+      <textarea id="p-message" maxlength="1000" required placeholder="Compartilhe sua intenção de oração..."></textarea>
+    </div>
+    <div class="field">
+      <label for="p-contact">Contato (opcional, não é divulgado)</label>
+      <input type="text" id="p-contact" maxlength="120" placeholder="Telefone ou e-mail, caso queira retorno da equipe" />
+    </div>
+    <label class="checkbox-row" style="margin-bottom:16px;">
+      <input type="checkbox" id="p-public" checked />
+      <span>Autorizo exibir meu pedido no mural público de orações (após aprovação da equipe AFIM)</span>
+    </label>
+    <button type="submit" class="btn btn-gold btn-block">Enviar pedido de oração 🙏</button>
+    <p class="hint text-center">Os pedidos são revisados pela equipe antes de aparecerem no mural.</p>
+  </form>
+
+  <div class="section-title">
+    <span class="bar"></span>
+    <h2>Mural de Orações</h2>
+  </div>
+  <div id="prayers-list">
+    <div class="spinner"></div>
+  </div>
+</main>
+
+<nav class="bottom-nav">
+  <a href="/" data-nav="/"><span class="icon">🏠</span>Início</a>
+  <a href="/liturgia.html" data-nav="/liturgia.html"><span class="icon">📖</span>Liturgia</a>
+  <a href="/oracao.html" data-nav="/oracao.html"><span class="icon">🙏</span>Orações</a>
+</nav>
+
+<footer class="site-footer">
+  <div class="container">
+    <img src="/assets/img/logo-small.png" alt="AFIM" />
+    <p>Associação Filhos de Maria (AFIM)</p>
+    <p class="fine">© <span id="year"></span> AFIM · <a href="/admin/">Área administrativa</a></p>
+  </div>
+</footer>
+
+<script src="/js/app.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/oracao.js"></script>
+<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>

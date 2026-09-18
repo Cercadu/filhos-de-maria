@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Administração - AFIM</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="icon" href="/favicon.ico" />
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body class="admin-shell">
+
+<div id="login-screen">
+  <div class="login-box">
+    <img src="/assets/img/logo.png" alt="AFIM" />
+    <h2>Área Administrativa</h2>
+    <p class="small-muted" style="margin-bottom:18px;">Digite a senha de acesso para gerenciar publicações e pedidos de oração.</p>
+    <div class="field" style="text-align:left;">
+      <input type="password" id="login-password" placeholder="Senha de administrador" />
+    </div>
+    <button class="btn btn-primary btn-block" id="login-btn">Entrar</button>
+    <p class="hint" id="login-error" style="color:#b3432b;display:none;">Senha incorreta. Tente novamente.</p>
+  </div>
+</div>
+
+<div id="admin-app" style="display:none;">
+  <div class="admin-topbar">
+    <div class="container">
+      <span><strong>AFIM</strong> · Painel Administrativo</span>
+      <button class="btn btn-sm btn-ghost" id="logout-btn" style="background:rgba(255,255,255,.12);color:#fff;">Sair</button>
+    </div>
+  </div>
+
+  <div class="container" style="padding-top:18px;padding-bottom:60px;">
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-tab="posts">📰 Publicações</button>
+      <button class="admin-tab" data-tab="prayers">🙏 Pedidos de Oração</button>
+    </div>
+
+    <section id="tab-posts">
+      <button class="btn btn-gold" id="new-post-btn" style="margin-bottom:16px;">+ Nova publicação</button>
+      <div id="admin-posts-list"><div class="spinner"></div></div>
+    </section>
+
+    <section id="tab-prayers" style="display:none;">
+      <div class="admin-tabs" style="margin-bottom:14px;">
+        <button class="admin-tab active" data-filter="pending">Pendentes</button>
+        <button class="admin-tab" data-filter="approved">Aprovados</button>
+        <button class="admin-tab" data-filter="rejected">Rejeitados</button>
+        <button class="admin-tab" data-filter="all">Todos</button>
+      </div>
+      <div id="admin-prayers-list"><div class="spinner"></div></div>
+    </section>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="post-modal">
+  <div class="modal">
+    <h3 id="modal-title">Nova publicação</h3>
+    <input type="hidden" id="post-id" />
+
+    <div class="field">
+      <label for="post-title">Título *</label>
+      <input type="text" id="post-title" placeholder="Ex: Informativo AFIM – Últimas atualizações" />
+    </div>
+
+    <div class="field">
+      <label for="post-excerpt">Resumo (opcional, aparece na listagem)</label>
+      <textarea id="post-excerpt" style="min-height:60px;" placeholder="Se deixar em branco, geramos automaticamente a partir do texto"></textarea>
+    </div>
+
+    <div class="field">
+      <label>Texto da publicação *</label>
+      <div class="editor-toolbar">
+        <button type="button" data-cmd="bold" title="Negrito"><b>B</b></button>
+        <button type="button" data-cmd="italic" title="Itálico"><i>I</i></button>
+        <button type="button" data-cmd="underline" title="Sublinhado"><u>U</u></button>
+        <button type="button" data-cmd="insertUnorderedList" title="Lista">• Lista</button>
+        <button type="button" data-cmd="insertOrderedList" title="Lista numerada">1. Lista</button>
+        <button type="button" data-cmd="formatBlock" data-value="&lt;h3&gt;" title="Título">H3</button>
+        <button type="button" data-cmd="formatBlock" data-value="&lt;p&gt;" title="Parágrafo">¶</button>
+        <button type="button" data-cmd="createLink" title="Link">🔗 Link</button>
+        <button type="button" id="insert-image-btn" title="Inserir imagem no texto">🖼️ Imagem</button>
+        <button type="button" data-cmd="removeFormat" title="Limpar formatação">Limpar</button>
+      </div>
+      <div class="editor-body" id="post-body" contenteditable="true" placeholder="Escreva ou cole (Ctrl+V) o texto da publicação..."></div>
+      <input type="file" id="inline-image-input" accept="image/*" style="display:none;" />
+    </div>
+
+    <div class="field">
+      <label>Imagem de capa (opcional)</label>
+      <div id="cover-drop" class="file-drop">Clique para escolher uma imagem de capa (até 3MB)</div>
+      <input type="file" id="cover-input" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none;" />
+      <div id="cover-preview" class="pending-files"></div>
+    </div>
+
+    <div class="field">
+      <label>Anexos (imagens ou documentos, até 4 arquivos)</label>
+      <div id="attach-drop" class="file-drop">Clique para anexar imagens ou documentos (imagem até 3MB, documento até 5MB)</div>
+      <input type="file" id="attach-input" accept="image/jpeg,image/png,image/webp,image/gif,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" multiple style="display:none;" />
+      <div id="attach-preview" class="pending-files"></div>
+    </div>
+
+    <div class="field">
+      <label for="post-status">Status</label>
+      <select id="post-status">
+        <option value="published">Publicado (visível no site)</option>
+        <option value="draft">Rascunho (somente admin)</option>
+      </select>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:18px;">
+      <button class="btn btn-ghost" id="cancel-post-btn" style="flex:1;">Cancelar</button>
+      <button class="btn btn-primary" id="save-post-btn" style="flex:2;">Salvar publicação</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/api.js"></script>
+<script src="/js/admin.js"></script>
+</body>
+</html>

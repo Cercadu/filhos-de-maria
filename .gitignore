@@ -1,0 +1,8 @@
+node_modules/
+.netlify/
+.env
+.DS_Store
+Thumbs.db
+deno.lock
+img/*.docx
+img/*.doc
