@@ -7,10 +7,20 @@
     if (norm === path) link.classList.add("active");
   });
 
-  // Service worker
+  // Service worker: registra e recarrega a página sozinho quando uma versão
+  // nova assume o controle, para nunca ficar preso rodando código antigo
+  // (ex: PWA instalado que fica muito tempo sem fechar).
   if ("serviceWorker" in navigator) {
+    let refreshed = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (refreshed) return;
+      refreshed = true;
+      window.location.reload();
+    });
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("/sw.js").catch(() => {});
+      navigator.serviceWorker.register("/sw.js").then((reg) => {
+        reg.update().catch(() => {});
+      }).catch(() => {});
     });
   }
 
