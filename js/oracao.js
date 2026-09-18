@@ -100,7 +100,7 @@
       <div class="msg">${escapeHtml(p.message)}</div>
       <div class="meta">
         <span class="date">${formatDate(p.createdAt)}</span>
-        <button class="pray-btn ${already ? "done" : ""}" data-id="${p.id}">🙏 Orei por isso (${p.prayCount || 0})</button>
+        <button class="pray-btn ${already ? "done" : ""}" data-id="${p.id}">🙏 Em Oração (${p.prayCount || 0})</button>
       </div>
     `;
     const btn = el.querySelector(".pray-btn");
@@ -109,7 +109,7 @@
       btn.disabled = true;
       try {
         const { prayCount } = await window.AfimApi.prayFor(p.id);
-        btn.textContent = `🙏 Orei por isso (${prayCount})`;
+        btn.textContent = `🙏 Em Oração (${prayCount})`;
         btn.classList.add("done");
         markPrayed(p.id);
       } catch {
