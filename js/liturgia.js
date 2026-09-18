@@ -6,7 +6,11 @@
   const nextBtn = document.getElementById("next-day");
   const todayBtn = document.getElementById("today-btn");
   const dateLabelBtn = document.getElementById("date-label-btn");
-  const datePicker = document.getElementById("date-picker");
+  const calendarPopover = document.getElementById("calendar-popover");
+  const calMonthLabel = document.getElementById("cal-month-label");
+  const calDaysEl = document.getElementById("calendar-days");
+  const calPrevMonthBtn = document.getElementById("cal-prev-month");
+  const calNextMonthBtn = document.getElementById("cal-next-month");
 
   const COLOR_MAP = {
     Verde: "#2f7a4f",
@@ -137,9 +141,74 @@
     }
   }
 
-  function isoDate(date) {
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+  function sameDay(a, b) {
+    return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
   }
+
+  // ---------- Calendário próprio (popover) ----------
+  let calendarViewDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+
+  function renderCalendar() {
+    const monthLabel = calendarViewDate.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+    calMonthLabel.textContent = monthLabel.charAt(0).toUpperCase() + monthLabel.slice(1);
+
+    const year = calendarViewDate.getFullYear();
+    const month = calendarViewDate.getMonth();
+    const firstWeekday = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const today = new Date();
+
+    let html = "";
+    for (let i = 0; i < firstWeekday; i++) {
+      html += `<span class="calendar-day empty"></span>`;
+    }
+    for (let day = 1; day <= daysInMonth; day++) {
+      const cellDate = new Date(year, month, day);
+      const classes = ["calendar-day"];
+      if (sameDay(cellDate, today)) classes.push("today");
+      if (sameDay(cellDate, currentDate)) classes.push("selected");
+      html += `<button type="button" class="${classes.join(" ")}" data-day="${day}">${day}</button>`;
+    }
+    calDaysEl.innerHTML = html;
+
+    calDaysEl.querySelectorAll(".calendar-day[data-day]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        currentDate = new Date(year, month, Number(btn.dataset.day));
+        closeCalendar();
+        loadLiturgy(currentDate);
+      });
+    });
+  }
+
+  function openCalendar() {
+    calendarViewDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    renderCalendar();
+    calendarPopover.classList.add("show");
+  }
+  function closeCalendar() {
+    calendarPopover.classList.remove("show");
+  }
+  function toggleCalendar() {
+    if (calendarPopover.classList.contains("show")) closeCalendar();
+    else openCalendar();
+  }
+
+  dateLabelBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggleCalendar();
+  });
+  calendarPopover.addEventListener("click", (e) => e.stopPropagation());
+  document.addEventListener("click", closeCalendar);
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeCalendar(); });
+
+  calPrevMonthBtn.addEventListener("click", () => {
+    calendarViewDate.setMonth(calendarViewDate.getMonth() - 1);
+    renderCalendar();
+  });
+  calNextMonthBtn.addEventListener("click", () => {
+    calendarViewDate.setMonth(calendarViewDate.getMonth() + 1);
+    renderCalendar();
+  });
 
   prevBtn.addEventListener("click", () => {
     currentDate.setDate(currentDate.getDate() - 1);
@@ -151,21 +220,6 @@
   });
   todayBtn.addEventListener("click", () => {
     currentDate = new Date();
-    loadLiturgy(currentDate);
-  });
-  dateLabelBtn.addEventListener("click", () => {
-    datePicker.value = isoDate(currentDate);
-    if (typeof datePicker.showPicker === "function") {
-      datePicker.showPicker();
-    } else {
-      datePicker.focus();
-      datePicker.click();
-    }
-  });
-  datePicker.addEventListener("change", () => {
-    if (!datePicker.value) return;
-    const [y, m, d] = datePicker.value.split("-").map(Number);
-    currentDate = new Date(y, m - 1, d);
     loadLiturgy(currentDate);
   });
 

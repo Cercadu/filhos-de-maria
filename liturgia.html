@@ -44,7 +44,18 @@
     </button>
     <button class="icon-btn" id="today-btn" aria-label="Ir para hoje" title="Hoje">📅</button>
     <button class="icon-btn" id="next-day" aria-label="Próximo dia">›</button>
-    <input type="date" id="date-picker" aria-label="Selecionar data" />
+
+    <div class="calendar-popover" id="calendar-popover">
+      <div class="calendar-header">
+        <button class="icon-btn" id="cal-prev-month" type="button" aria-label="Mês anterior">‹</button>
+        <strong id="cal-month-label"></strong>
+        <button class="icon-btn" id="cal-next-month" type="button" aria-label="Próximo mês">›</button>
+      </div>
+      <div class="calendar-weekdays">
+        <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
+      </div>
+      <div class="calendar-days" id="calendar-days"></div>
+    </div>
   </div>
 
   <div id="liturgy-content">
