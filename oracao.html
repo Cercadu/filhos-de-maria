@@ -38,11 +38,33 @@
   </div>
 
   <div class="admin-tabs" id="oracao-tabs">
-    <button class="admin-tab active" data-panel="pedidos">🕯️ Pedidos de Oração</button>
+    <button class="admin-tab active" data-panel="velas">🕯️ Velas</button>
+    <button class="admin-tab" data-panel="pedidos">🙏 Pedidos de Oração</button>
     <button class="admin-tab" data-panel="testemunhos">✨ Testemunhos</button>
   </div>
 
-  <section id="panel-pedidos">
+  <section id="panel-velas">
+    <p class="small-muted" style="margin-bottom:16px;">Acenda uma vela em oração. Ela fica acesa no mural por 24 horas — com seu nome ou de forma anônima.</p>
+
+    <form class="prayer-form" id="candle-form">
+      <div class="field">
+        <label for="c-name">Seu nome (opcional)</label>
+        <input type="text" id="c-name" maxlength="60" placeholder="Deixe em branco para acender de forma anônima" />
+      </div>
+      <button type="submit" class="btn btn-gold btn-block">🕯️ Acender uma vela</button>
+    </form>
+
+    <div class="section-title">
+      <span class="bar"></span>
+      <h2>Mural de Velas</h2>
+    </div>
+    <p class="small-muted" style="margin-top:-10px;margin-bottom:16px;">Velas acesas nas últimas 24 horas.</p>
+    <div id="candles-grid" class="candles-grid">
+      <div class="spinner"></div>
+    </div>
+  </section>
+
+  <section id="panel-pedidos" style="display:none;">
     <p class="small-muted" style="margin-bottom:16px;">"Não andeis ansiosos por coisa alguma; em tudo, porém, sejam conhecidas, diante de Deus, as vossas petições, pela oração e súplicas." (Fl 4,6)</p>
 
     <form class="prayer-form" id="prayer-form">
@@ -60,17 +82,17 @@
       </div>
       <label class="checkbox-row" style="margin-bottom:16px;">
         <input type="checkbox" id="p-public" checked />
-        <span>Autorizo exibir meu pedido no mural de velas (após aprovação da equipe AFIM)</span>
+        <span>Autorizo exibir meu pedido no mural público (após aprovação da equipe AFIM)</span>
       </label>
-      <button type="submit" class="btn btn-gold btn-block">🕯️ Acender uma vela com meu pedido</button>
+      <button type="submit" class="btn btn-gold btn-block">Enviar pedido de oração 🙏</button>
       <p class="hint text-center">Os pedidos são revisados pela equipe antes de aparecerem no mural.</p>
     </form>
 
     <div class="section-title">
       <span class="bar"></span>
-      <h2>Mural de Velas</h2>
+      <h2>Mural de Orações</h2>
     </div>
-    <p class="small-muted" style="margin-top:-10px;margin-bottom:16px;">Velas acesas pela comunidade nos últimos 7 dias.</p>
+    <p class="small-muted" style="margin-top:-10px;margin-bottom:16px;">Pedidos aprovados nos últimos 7 dias.</p>
     <div id="prayers-list">
       <div class="spinner"></div>
     </div>

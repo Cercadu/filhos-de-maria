@@ -128,6 +128,31 @@ window.AfimApi = (function () {
     return res.json();
   }
 
+  async function getCandles() {
+    const res = await fetch("/api/candles");
+    if (!res.ok) throw new Error("Falha ao carregar velas");
+    return res.json();
+  }
+
+  async function lightCandle(name) {
+    const res = await fetch("/api/candles", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ name }),
+    });
+    if (!res.ok) throw new Error("Falha ao acender vela");
+    return res.json();
+  }
+
+  async function deleteCandle(id) {
+    const res = await fetch(`/api/candles?id=${encodeURIComponent(id)}`, {
+      method: "DELETE",
+      headers: adminHeaders(),
+    });
+    if (!res.ok) throw new Error("Falha ao excluir vela");
+    return res.json();
+  }
+
   async function getForms() {
     const res = await fetch("/api/forms", { headers: adminHeaders() });
     if (!res.ok) throw new Error("Falha ao carregar formulários");
@@ -199,6 +224,9 @@ window.AfimApi = (function () {
     submitTestimonial,
     moderateTestimonial,
     deleteTestimonial,
+    getCandles,
+    lightCandle,
+    deleteCandle,
     getForms,
     createForm,
     updateForm,
