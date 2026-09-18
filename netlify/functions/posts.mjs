@@ -47,13 +47,33 @@ function excerptFrom(body, provided) {
   return stripHtml(body).slice(0, 220);
 }
 
+// Datas vêm como "YYYY-MM-DD" (input type=date); normaliza ou descarta valores inválidos.
+function normalizeDate(value) {
+  if (!value) return null;
+  const d = String(value).trim();
+  return /^\d{4}-\d{2}-\d{2}$/.test(d) ? d : null;
+}
+
+function isWithinSchedule(post) {
+  const now = Date.now();
+  if (post.publishAt) {
+    const start = new Date(`${post.publishAt}T00:00:00`).getTime();
+    if (now < start) return false;
+  }
+  if (post.unpublishAt) {
+    const end = new Date(`${post.unpublishAt}T23:59:59`).getTime();
+    if (now > end) return false;
+  }
+  return true;
+}
+
 export default async (req) => {
   const url = new URL(req.url);
   const admin = isAuthorized(req);
 
   if (req.method === "GET") {
     const { posts } = await readAll(url.origin);
-    const visible = admin ? posts : posts.filter((p) => p.status === "published");
+    const visible = admin ? posts : posts.filter((p) => p.status === "published" && isWithinSchedule(p));
     visible.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     return jsonResponse({ posts: visible });
   }
@@ -83,6 +103,8 @@ export default async (req) => {
       attachments,
       status: body.status === "draft" ? "draft" : "published",
       author: (body.author || "").trim() || "AFIM",
+      publishAt: normalizeDate(body.publishAt),
+      unpublishAt: normalizeDate(body.unpublishAt),
       createdAt: now,
       updatedAt: now,
     };
@@ -117,6 +139,8 @@ export default async (req) => {
       coverImage: body.coverImage !== undefined ? body.coverImage : existing.coverImage,
       attachments: Array.isArray(body.attachments) ? body.attachments.slice(0, MAX_ATTACHMENTS) : existing.attachments,
       status: body.status === "draft" || body.status === "published" ? body.status : existing.status,
+      publishAt: body.publishAt !== undefined ? normalizeDate(body.publishAt) : existing.publishAt,
+      unpublishAt: body.unpublishAt !== undefined ? normalizeDate(body.unpublishAt) : existing.unpublishAt,
       updatedAt: new Date().toISOString(),
     };
     posts[idx] = updated;

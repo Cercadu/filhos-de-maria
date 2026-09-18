@@ -320,6 +320,8 @@
   const postTitleInput = document.getElementById("post-title");
   const postExcerptInput = document.getElementById("post-excerpt");
   const postStatusInput = document.getElementById("post-status");
+  const postPublishAtInput = document.getElementById("post-publish-at");
+  const postUnpublishAtInput = document.getElementById("post-unpublish-at");
 
   function openModal(post) {
     postIdInput.value = post ? post.id : "";
@@ -328,6 +330,8 @@
     postExcerptInput.value = post ? post.excerpt : "";
     postBody.innerHTML = post ? post.body : "";
     postStatusInput.value = post ? post.status : "published";
+    postPublishAtInput.value = (post && post.publishAt) || "";
+    postUnpublishAtInput.value = (post && post.unpublishAt) || "";
     pendingCover = post && post.coverImage ? { ...post.coverImage } : null;
     pendingAttachments = post && post.attachments ? post.attachments.map((a) => ({ ...a })) : [];
     renderCoverPreview();
@@ -347,6 +351,10 @@
       window.afimToast("Preencha o título e o texto da publicação.");
       return;
     }
+    if (postPublishAtInput.value && postUnpublishAtInput.value && postUnpublishAtInput.value < postPublishAtInput.value) {
+      window.afimToast('"Publicar até" não pode ser antes de "Publicar a partir de".');
+      return;
+    }
     const payload = {
       title,
       excerpt: postExcerptInput.value.trim(),
@@ -354,6 +362,8 @@
       coverImage: pendingCover,
       attachments: pendingAttachments,
       status: postStatusInput.value,
+      publishAt: postPublishAtInput.value || null,
+      unpublishAt: postUnpublishAtInput.value || null,
     };
 
     const saveBtn = document.getElementById("save-post-btn");
@@ -389,10 +399,13 @@
       posts.forEach((post) => {
         const row = document.createElement("div");
         row.className = "post-row";
+        const schedule = post.publishAt || post.unpublishAt
+          ? ` · <span class="small-muted">📅 ${post.publishAt ? "de " + formatDate(post.publishAt) : ""}${post.unpublishAt ? " até " + formatDate(post.unpublishAt) : ""}</span>`
+          : "";
         row.innerHTML = `
           <div class="info">
             <strong>${escapeHtml(post.title)}</strong>
-            <span class="small-muted">${formatDate(post.createdAt)} · <span class="tag ${post.status === "published" ? "published" : ""}">${post.status === "published" ? "Publicado" : "Rascunho"}</span></span>
+            <span class="small-muted">${formatDate(post.createdAt)} · <span class="tag ${post.status === "published" ? "published" : ""}">${post.status === "published" ? "Publicado" : "Rascunho"}</span>${schedule}</span>
           </div>
           <div class="actions">
             <button class="btn btn-sm btn-outline" data-action="edit">Editar</button>

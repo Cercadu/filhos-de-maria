@@ -228,6 +228,18 @@
       </select>
     </div>
 
+    <div style="display:flex;gap:12px;">
+      <div class="field" style="flex:1;">
+        <label for="post-publish-at">Publicar a partir de (opcional)</label>
+        <input type="date" id="post-publish-at" />
+      </div>
+      <div class="field" style="flex:1;">
+        <label for="post-unpublish-at">Publicar até (opcional)</label>
+        <input type="date" id="post-unpublish-at" />
+      </div>
+    </div>
+    <p class="hint" style="margin-top:-10px;margin-bottom:16px;">Deixe em branco para publicar imediatamente e não expirar. Útil para avisos de eventos com data certa.</p>
+
     <div style="display:flex;gap:10px;margin-top:18px;">
       <button class="btn btn-ghost" id="cancel-post-btn" style="flex:1;">Cancelar</button>
       <button class="btn btn-primary" id="save-post-btn" style="flex:2;">Salvar publicação</button>
